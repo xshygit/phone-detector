@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>贴膜助手 | 多引擎精准识别手机型号</title>
+    <title>贴膜助手 | 精准识别手机型号</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,7 +58,7 @@
         <div class="status-text">正在加载识别引擎，请稍候...</div>
     </div>
     <div class="tip">
-        🧠 四重识别引擎<br>
+        🔍 四重识别引擎<br>
         ＊ 结果仅供参考，建议截图对照购买贴膜
     </div>
     <div id="manualPanel" style="margin-top: 0.8rem;"></div>
@@ -83,10 +83,10 @@
             let displayModel = deviceInfo.fullName || `${deviceInfo.brand} ${deviceInfo.model}`;
             if (!displayModel || displayModel.trim() === '') displayModel = "智能设备";
             if (displayModel.length > 42) displayModel = displayModel.substring(0, 40) + '..';
+            // 移除了识别源显示 (engine-badge 行完全删除)
             resultArea.innerHTML = `
                 <div class="brand-icon">📱✅</div>
                 <div class="model-name">${escapeHtml(displayModel)}</div>
-                <div class="engine-badge">🎯 识别源: ${escapeHtml(engineName)}</div>
                 <div class="detail-hint">📸 截图保存，精准匹配贴膜</div>`;
             manualPanel.innerHTML = '';
         }
@@ -343,7 +343,7 @@
         }
 
         async function identifyWithMultipleEngines() {
-            // 1. 最高优先级: WURFL (原版能识别的原因)
+            // 1. 最高优先级: WURFL (专业设备库)
             updateLoadingStatus("正在调用专业设备库...");
             let result = await identifyWithWurfl();
             if (result && isSpecificDevice(result)) {
