@@ -2,325 +2,456 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>贴膜助手 | 扫码即知手机型号</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贴膜助手 | 多引擎精准识别手机型号</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
             background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem;
         }
         .card {
-            background: rgba(255,255,255,0.96);
-            border-radius: 2rem;
-            padding: 2rem 1.5rem;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
-            backdrop-filter: blur(2px);
+            background: rgba(255,255,255,0.96); border-radius: 2rem; padding: 2rem 1.5rem;
+            max-width: 520px; width: 100%; text-align: center;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.2); backdrop-filter: blur(2px); transition: all 0.2s ease;
         }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 0.3rem;
-            color: #1e293b;
-        }
-        .sub {
-            color: #475569;
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1rem;
-        }
+        h1 { font-size: 1.8rem; margin-bottom: 0.3rem; color: #1e293b; }
+        .sub { color: #475569; font-size: 0.85rem; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
         .result-box {
-            background: #f8fafc;
-            border-radius: 1.5rem;
-            padding: 1.8rem 1rem;
-            margin: 1.5rem 0;
-            min-height: 180px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            background: #f8fafc; border-radius: 1.5rem; padding: 1.8rem 1rem; margin: 1.5rem 0;
+            min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .brand-icon {
-            font-size: 3.5rem;
-            margin-bottom: 0.5rem;
-        }
+        .brand-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
         .model-name {
-            font-size: 1.35rem;
-            font-weight: 600;
-            color: #0f172a;
-            background: white;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            display: inline-block;
-            margin: 0.5rem 0;
+            font-size: 1.35rem; font-weight: 600; color: #0f172a; background: white;
+            padding: 0.3rem 1rem; border-radius: 40px; display: inline-block; margin: 0.5rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-        .tip {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 1rem;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 1rem;
-        }
-        .manual-select {
-            margin-top: 1rem;
-            text-align: left;
-        }
-        .brand-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            justify-content: center;
-            margin-top: 0.8rem;
-        }
+        .detail-hint { font-size: 0.7rem; color: #94a3b8; margin-top: 0.8rem; background: #f1f5f9; padding: 0.2rem 0.8rem; border-radius: 30px; }
+        .tip { font-size: 0.75rem; color: #64748b; margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; }
+        .manual-select { margin-top: 1rem; text-align: left; }
+        .brand-buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 0.8rem; }
         .brand-btn {
-            background: #eef2ff;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #4f46e5;
-            cursor: pointer;
-            transition: 0.2s;
+            background: #eef2ff; border: none; padding: 0.45rem 1.1rem; border-radius: 40px;
+            font-size: 0.8rem; font-weight: 500; color: #4f46e5; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .brand-btn:active {
-            background: #c7d2fe;
-            transform: scale(0.96);
-        }
+        .brand-btn:active { background: #c7d2fe; transform: scale(0.96); }
         .loading-spinner {
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid #e2e8f0;
-            border-top-color: #4f46e5;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 0.8rem;
+            width: 2rem; height: 2rem; border: 3px solid #e2e8f0; border-top-color: #4f46e5;
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 0.8rem;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .status-text {
-            font-size: 0.9rem;
-            color: #334155;
-        }
-        button {
-            background: none;
-            border: none;
-        }
+        .status-text { font-size: 0.9rem; color: #334155; }
+        .engine-badge { font-size: 0.65rem; background: #e0e7ff; padding: 0.2rem 0.6rem; border-radius: 30px; color: #4338ca; margin-top: 0.6rem; }
+        button { background: none; border: none; }
     </style>
-    <!-- 加载本地UA解析库 (完全离线可用) -->
     <script src="https://cdn.jsdelivr.net/npm/ua-parser-js@1.0.38/dist/ua-parser.min.js"></script>
 </head>
 <body>
 <div class="card" id="app">
     <h1>📱 贴膜助手</h1>
-    <div class="sub">扫码即知手机型号，精准匹配贴膜</div>
-
+    <div class="sub">多引擎精准匹配 · 扫码即知型号</div>
     <div class="result-box" id="resultArea">
         <div class="loading-spinner"></div>
-        <div class="status-text">正在识别您的手机...</div>
+        <div class="status-text">正在加载识别引擎，请稍候...</div>
     </div>
-
     <div class="tip">
-        ＊ 识别结果仅供参考
+        🧠 三重识别引擎 (DeviceDetector + 深度UA库 + 本地型号库)<br>
+        ＊ 结果仅供参考，建议截图对照购买贴膜
     </div>
-    <div id="manualPanel" style="margin-top: 1rem;"></div>
+    <div id="manualPanel" style="margin-top: 0.8rem;"></div>
 </div>
 
 <script>
     (function() {
-        // DOM 元素
         const resultArea = document.getElementById('resultArea');
         const manualPanel = document.getElementById('manualPanel');
-        
-        // 通用识别函数 (基于UA)
-        function getDeviceInfo() {
-            const parser = new UAParser();
-            const result = parser.getResult();
+
+        function loadScript(src, timeout = 5000) {
+            return new Promise((resolve, reject) => {
+                const existing = document.querySelector(`script[src="${src}"]`);
+                if (existing) { resolve(); return; }
+                const script = document.createElement('script');
+                script.src = src; script.async = true;
+                const timer = setTimeout(() => reject(new Error(`Script load timeout: ${src}`)), timeout);
+                script.onload = () => { clearTimeout(timer); resolve(); };
+                script.onerror = () => { clearTimeout(timer); reject(new Error(`Script load error: ${src}`)); };
+                document.head.appendChild(script);
+            });
+        }
+
+        function updateLoadingStatus(text) {
+            if (!resultArea || !resultArea.innerHTML.includes('loading-spinner')) return;
+            resultArea.innerHTML = `<div class="loading-spinner"></div><div class="status-text">${escapeHtml(text)}</div>`;
+        }
+
+        function renderSuccess(deviceInfo, engineName = "识别引擎") {
+            let displayModel = deviceInfo.fullName || `${deviceInfo.brand} ${deviceInfo.model}`;
+            if (!displayModel || displayModel.trim() === '') displayModel = "智能设备";
+            if (displayModel.length > 42) displayModel = displayModel.substring(0, 40) + '..';
+            resultArea.innerHTML = `
+                <div class="brand-icon">📱✅</div>
+                <div class="model-name">${escapeHtml(displayModel)}</div>
+                <div class="engine-badge">🎯 识别源: ${escapeHtml(engineName)}</div>
+                <div class="detail-hint">📸 截图保存，精准匹配贴膜</div>`;
+            manualPanel.innerHTML = '';
+        }
+
+        function getLocalEnhancedDevice() {
             const ua = navigator.userAgent;
-            
-            let brand = '';
-            let model = '';
-            let fullName = '';
-            
-            // 优先使用 ua-parser-js 的结果
-            if (result.device && result.device.vendor && result.device.model) {
-                brand = result.device.vendor;
-                model = result.device.model;
-                fullName = `${brand} ${model}`;
-            }
-            
-            // 针对常见品牌的深度识别 (弥补 ua-parser 某些型号缺失)
-            // iPhone 系列
+
+            const iPhoneModelMap = {
+                "iPhone8,1": "iPhone 6s", "iPhone8,2": "iPhone 6s Plus", "iPhone8,4": "iPhone SE (第一代)",
+                "iPhone9,1": "iPhone 7", "iPhone9,2": "iPhone 7 Plus", "iPhone9,3": "iPhone 7", "iPhone9,4": "iPhone 7 Plus",
+                "iPhone10,1": "iPhone 8", "iPhone10,2": "iPhone 8 Plus", "iPhone10,3": "iPhone X",
+                "iPhone10,4": "iPhone 8", "iPhone10,5": "iPhone 8 Plus", "iPhone10,6": "iPhone X",
+                "iPhone11,2": "iPhone XS", "iPhone11,4": "iPhone XS Max", "iPhone11,6": "iPhone XS Max", "iPhone11,8": "iPhone XR",
+                "iPhone12,1": "iPhone 11", "iPhone12,3": "iPhone 11 Pro", "iPhone12,5": "iPhone 11 Pro Max",
+                "iPhone12,8": "iPhone SE (第二代)",
+                "iPhone13,1": "iPhone 12 mini", "iPhone13,2": "iPhone 12", "iPhone13,3": "iPhone 12 Pro", "iPhone13,4": "iPhone 12 Pro Max",
+                "iPhone14,2": "iPhone 13 Pro", "iPhone14,3": "iPhone 13 Pro Max", "iPhone14,4": "iPhone 13 mini", "iPhone14,5": "iPhone 13",
+                "iPhone14,6": "iPhone SE (第三代)",
+                "iPhone14,7": "iPhone 14", "iPhone14,8": "iPhone 14 Plus", "iPhone15,2": "iPhone 14 Pro", "iPhone15,3": "iPhone 14 Pro Max",
+                "iPhone15,4": "iPhone 15", "iPhone15,5": "iPhone 15 Plus", "iPhone16,1": "iPhone 15 Pro", "iPhone16,2": "iPhone 15 Pro Max",
+                "iPhone17,1": "iPhone 16 Pro", "iPhone17,2": "iPhone 16 Pro Max", "iPhone17,3": "iPhone 16", "iPhone17,4": "iPhone 16 Plus",
+                "iPhone17,5": "iPhone 16e",
+                "iPhone18,1": "iPhone 17", "iPhone18,2": "iPhone 17 Plus", "iPhone18,3": "iPhone 17 Pro", "iPhone18,4": "iPhone 17 Pro Max",
+                "iPhone18,5": "iPhone 17 Air"
+            };
+
+            const huaweiModelMap = {
+                "NOH-AN00": "Mate 40 Pro", "NOP-AN00": "Mate 40 Pro+",
+                "OCE-AN10": "Mate 50", "CET-AN00": "Mate 50 Pro", "CS-AN00": "Mate 50 RS",
+                "BRA-AL00": "Mate 60", "ALN-AL00": "Mate 60 Pro", "ALN-AL10": "Mate 60 Pro+",
+                "MLN-AL00": "Mate 60 RS 非凡大师",
+                "BVL-AN00": "Mate 70", "BVL-AN10": "Mate 70 Pro", "BVL-AL00": "Mate 70 Pro+",
+                "BVL-AL10": "Mate 70 RS 非凡大师",
+                "LNA-AL00": "P60", "LNA-AL10": "P60 Pro", "LNA-AL20": "P60 Art",
+                "ADY-AL00": "Pura 70", "ADY-AL10": "Pura 70 Pro",
+                "HBN-AL00": "Pura 70 Pro+", "BPK-AN00": "Pura 70 Ultra",
+                "RKY-AN00": "Pura 80", "RKY-AN10": "Pura 80 Pro", "RKY-AL00": "Pura 80 Pro+",
+                "NCE-AN00": "nova 11", "NCO-AN00": "nova 11 Pro", "NCO-AL00": "nova 11 Ultra",
+                "ELS-AN00": "nova 12", "ELS-AN10": "nova 12 Pro", "ELS-AL00": "nova 12 Ultra",
+                "VNE-AN00": "nova 13", "VNE-AN10": "nova 13 Pro",
+                "DBY-AN20": "畅享 70 Pro"
+            };
+
+            const honorModelMap = {
+                "ANY-AN00": "Magic5", "PGT-AN00": "Magic5 Pro",
+                "BMH-AN00": "Magic6", "BDZ-AN00": "Magic6 Pro", "EGO-AN00": "Magic6 Ultimate",
+                "AUL-AN00": "Magic7", "AUL-AN10": "Magic7 Pro", "AUL-AL00": "Magic7 RSR 保时捷",
+                "REA-AN00": "200", "REA-AN10": "200 Pro",
+                "BKK-AN00": "300", "BKK-AN10": "300 Pro",
+                "CRK-AN00": "X50", "CRK-AN10": "X50 GT",
+                "CHL-AN00": "X60", "CHL-AN10": "X60 Pro"
+            };
+
+            const xiaomiModelMap = {
+                "23127PN0CC": "小米14", "23116PN5BC": "小米14 Pro", "24031PN0DC": "小米14 Ultra",
+                "23113RKC6C": "小米14 Civi",
+                "25111XPUCC": "小米15", "25117BPUCC": "小米15 Pro", "25123BPUCC": "小米15 Ultra",
+                "24117RA68C": "小米15S Pro",
+                "24053PY09C": "小米 MIX Fold 4", "2406ERPBEC": "小米 MIX Flip",
+                "24120RAGBC": "Redmi K80", "24120RN86C": "Redmi K80 Pro", "24120RACGC": "Redmi K80 Ultra",
+                "23090RA98C": "Redmi K70 Pro", "2311DRK48C": "Redmi K70", "23116RN86C": "Redmi K70E",
+                "24051RA17C": "Redmi Note 13 Pro+", "23054RA19C": "Redmi Note 13 Pro",
+                "24116RA48C": "Redmi Note 14 Pro+", "24109RA49C": "Redmi Note 14 Pro",
+                "24117RA69C": "Redmi Turbo 4", "2407FPN8DC": "Redmi Turbo 3"
+            };
+
+            const oppoModelMap = {
+                "PHX110": "Find X7", "PHX120": "Find X7 Pro",
+                "PJD110": "Find X8", "PJD120": "Find X8 Pro", "PJD130": "Find X8 Ultra",
+                "CPH2581": "Reno12", "CPH2591": "Reno12 Pro",
+                "CPH2665": "Reno13", "CPH2675": "Reno13 Pro",
+                "CPH2579": "A3 Pro", "CPH2637": "A3x"
+            };
+
+            const vivoModelMap = {
+                "V2309A": "vivo X100", "V2324A": "vivo X100 Pro", "V2338A": "vivo X100 Ultra",
+                "V2401A": "vivo X200", "V2421A": "vivo X200 Pro", "V2431A": "vivo X200 Ultra",
+                "V2318A": "vivo S18", "V2328A": "vivo S18 Pro",
+                "V2404A": "vivo S19", "V2414A": "vivo S19 Pro",
+                "V2307A": "iQOO 12", "V2307B": "iQOO 12 Pro",
+                "V2403A": "iQOO 13", "V2403B": "iQOO Neo9",
+                "V2502A": "iQOO 15"
+            };
+
+            const oneplusModelMap = {
+                "CPH2411": "OnePlus 11", "CPH2449": "OnePlus 12", "CPH2591": "OnePlus 13",
+                "CPH2661": "OnePlus 13R", "CPH2679": "OnePlus Ace 5"
+            };
+
+            const samsungModelMap = {
+                "SM-S921B": "Galaxy S24", "SM-S926B": "Galaxy S24+", "SM-S928B": "Galaxy S24 Ultra",
+                "SM-S921U": "Galaxy S24", "SM-S928U": "Galaxy S24 Ultra",
+                "SM-S931B": "Galaxy S25", "SM-S936B": "Galaxy S25+", "SM-S938B": "Galaxy S25 Ultra",
+                "SM-S931U": "Galaxy S25", "SM-S938U": "Galaxy S25 Ultra",
+                "SM-F946B": "Galaxy Z Fold5", "SM-F731B": "Galaxy Z Flip5",
+                "SM-F956B": "Galaxy Z Fold6", "SM-F741B": "Galaxy Z Flip6",
+                "SM-F968B": "Galaxy Z Fold7", "SM-F768B": "Galaxy Z Flip7",
+                "SM-A556B": "Galaxy A55", "SM-A356B": "Galaxy A35", "SM-A566B": "Galaxy A56"
+            };
+
+            const realmeModelMap = {
+                "RMX3800": "realme GT5 Pro", "RMX3900": "realme GT6",
+                "RMX3820": "realme 12 Pro+", "RMX3910": "realme 13 Pro+",
+                "RMX3939": "realme GT7 Pro", "RMX4060": "realme GT7"
+            };
+
             if (/iPhone/i.test(ua)) {
-                brand = 'Apple';
-                const match = ua.match(/iPhone(?:;\s*CPU\s*(?:iPhone\s*(?:Pro\s*)?(?:Max)?)?\s*OS\s*(\d+_\d+))?/i);
-                if (ua.includes('iPhone15,2')) model = 'iPhone 14 Pro';
-                else if (ua.includes('iPhone15,3')) model = 'iPhone 14 Pro Max';
-                else if (ua.includes('iPhone14,2')) model = 'iPhone 13 Pro';
-                else if (ua.includes('iPhone14,3')) model = 'iPhone 13 Pro Max';
-                else if (ua.includes('iPhone14,5')) model = 'iPhone 13';
-                else if (ua.includes('iPhone13,2')) model = 'iPhone 12';
-                else if (ua.includes('iPhone12,1')) model = 'iPhone 11';
-                else model = 'iPhone';
-                fullName = `${brand} ${model}`;
+                let match = ua.match(/iPhone(\d+,\d+)/i);
+                let identifier = match ? `iPhone${match[1]}` : null;
+                let modelName = identifier && iPhoneModelMap[identifier] ? iPhoneModelMap[identifier] : null;
+                if (!modelName) {
+                    if (match) {
+                        const major = parseInt(match[1].split(',')[0]);
+                        if (major >= 19) modelName = "iPhone (最新旗舰)";
+                        else if (major >= 17) modelName = "iPhone 16 系列";
+                        else if (major >= 15) modelName = "iPhone 15 系列";
+                        else modelName = "iPhone";
+                    } else modelName = "iPhone";
+                }
+                return { brand: "Apple", model: modelName, fullName: `Apple ${modelName}`, source: "本地映射" };
             }
-            // 华为 / 荣耀 特殊型号
-            else if (/HUAWEI|HUAWEI/i.test(ua) || /VOG-AL00|TAS-AL00|LIO-AL00|NOH-AN00/i.test(ua)) {
-                brand = '华为';
-                if (/VOG-AL00/i.test(ua)) model = 'P30 Pro';
-                else if (/TAS-AL00/i.test(ua)) model = 'Mate 30';
-                else if (/LIO-AL00/i.test(ua)) model = 'Mate 30 Pro';
-                else if (/NOH-AN00/i.test(ua)) model = 'P40 Pro';
-                else model = '华为手机';
-                fullName = `${brand} ${model}`;
+
+            if (/HUAWEI|HW-/i.test(ua)) {
+                let codeMatch = ua.match(/\b([A-Z]{2,4}-[A-Z]{2}[0-9]{2,3})\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && huaweiModelMap[code] ? huaweiModelMap[code] : null;
+                if (!model && code) {
+                    const prefix = code.split('-')[0];
+                    const seriesHints = { 'ALN':'Mate 60系列','BVL':'Mate 70系列','HBN':'Pura 70系列','ADY':'Pura 70系列','RKY':'Pura 80系列','LNA':'P60系列','ELS':'nova 12系列','VNE':'nova 13系列' };
+                    model = seriesHints[prefix] || `华为手机 (${code})`;
+                }
+                if (!model) model = "华为手机";
+                return { brand: "华为", model: model, fullName: `华为 ${model}`, source: "本地映射" };
             }
-            // 小米 / 红米 / POCO
-            else if (/Mi\s|Redmi|POCO/i.test(ua)) {
-                brand = '小米/红米';
-                const miMatch = ua.match(/Mi\s(\w+)/i);
-                if (miMatch) model = miMatch[1];
-                else model = '小米手机';
-                fullName = `${brand} ${model}`;
+
+            if (/HONOR/i.test(ua)) {
+                let codeMatch = ua.match(/\b([A-Z]{2,4}-[A-Z]{2}[0-9]{2,3})\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && honorModelMap[code] ? honorModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/HONOR\s+([A-Z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[1].trim(); }
+                if (!model) model = "荣耀手机";
+                return { brand: "荣耀", model: model, fullName: `荣耀 ${model}`, source: "本地映射" };
             }
-            // OPPO / OnePlus / realme
-            else if (/OPPO|OnePlus|realme/i.test(ua)) {
-                if (/OPPO/i.test(ua)) brand = 'OPPO';
-                else if (/OnePlus/i.test(ua)) brand = '一加';
-                else brand = 'realme';
-                const match = ua.match(/(?:OPPO|OnePlus|realme)\s+(\w+)/i);
-                if (match) model = match[1];
-                else model = `${brand}手机`;
-                fullName = `${brand} ${model}`;
+
+            if (/Xiaomi|Redmi|\bMi\s/i.test(ua)) {
+                let codeMatch = ua.match(/\b([0-9]{5,}[A-Z]{2,}[0-9A-Z]*)\b/i);
+                let code = codeMatch ? codeMatch[1] : null;
+                let model = code && xiaomiModelMap[code] ? xiaomiModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/(?:Xiaomi|Redmi|POCO)\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[0].trim().replace(/Build.*/,'').trim(); }
+                if (!model) model = /Redmi/i.test(ua) ? "Redmi 手机" : "小米手机";
+                return { brand: "小米/红米", model: model, fullName: model.includes('小米') || model.includes('Redmi') || model.includes('Xiaomi') ? model : `小米/红米 ${model}`, source: "本地映射" };
             }
-            // vivo / iQOO
-            else if (/vivo|iQOO/i.test(ua)) {
-                brand = /vivo/i.test(ua) ? 'vivo' : 'iQOO';
-                const match = ua.match(/(?:vivo|iQOO)\s+(\w+)/i);
-                if (match) model = match[1];
-                else model = `${brand}手机`;
-                fullName = `${brand} ${model}`;
+
+            if (/OPPO/i.test(ua)) {
+                let codeMatch = ua.match(/\b(CPH[0-9]{4}|PHX[0-9]{3}|PJD[0-9]{3})\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && oppoModelMap[code] ? oppoModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/OPPO\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[1].trim(); }
+                if (!model) model = "OPPO 手机";
+                return { brand: "OPPO", model: model, fullName: `OPPO ${model}`.replace(/^OPPO OPPO/, 'OPPO'), source: "本地映射" };
             }
-            // 三星
-            else if (/Samsung|SM-|Galaxy/i.test(ua)) {
-                brand = '三星';
-                const match = ua.match(/SM-([A-Za-z0-9]+)/i);
-                if (match) model = `Galaxy ${match[1]}`;
-                else model = '三星手机';
-                fullName = `${brand} ${model}`;
+
+            if (/vivo|iQOO/i.test(ua)) {
+                let codeMatch = ua.match(/\b(V[0-9]{4}[A-Z])\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && vivoModelMap[code] ? vivoModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/(?:vivo|iQOO)\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[0].trim().replace(/Build.*/,'').trim(); }
+                if (!model) model = /iQOO/i.test(ua) ? "iQOO 手机" : "vivo 手机";
+                return { brand: "vivo/iQOO", model: model, fullName: model.includes('vivo') || model.includes('iQOO') ? model : `vivo ${model}`, source: "本地映射" };
             }
-            
-            // 如果上面都没抓到，就用 ua-parser 的结果，或者粗暴显示 Android/iOS
-            if (!fullName || fullName === 'undefined undefined') {
-                if (/Android/i.test(ua)) {
-                    brand = '安卓手机';
-                    model = '未知型号';
-                    fullName = '安卓手机 (请见下方常见品牌)';
-                } else if (/iPhone|iPad|iPod/i.test(ua)) {
-                    brand = 'Apple';
-                    model = /iPad/i.test(ua) ? 'iPad' : 'iPhone';
-                    fullName = `${brand} ${model}`;
-                } else {
-                    brand = '未知品牌';
-                    model = '';
-                    fullName = '未能自动识别';
+
+            if (/OnePlus/i.test(ua)) {
+                let codeMatch = ua.match(/\b(CPH[0-9]{4})\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && oneplusModelMap[code] ? oneplusModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/OnePlus\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[1].trim(); }
+                if (!model) model = "一加手机";
+                return { brand: "一加", model: model, fullName: `一加 ${model}`, source: "本地映射" };
+            }
+
+            if (/Samsung|SM-[A-Z]/i.test(ua)) {
+                let smMatch = ua.match(/\b(SM-[A-Z][0-9]{3,4}[A-Z0-9]*)\b/i);
+                let code = smMatch ? smMatch[1].toUpperCase() : null;
+                let model = code && samsungModelMap[code] ? samsungModelMap[code] : null;
+                if (!model && code) model = `Galaxy (${code})`;
+                if (!model) model = "三星 Galaxy";
+                return { brand: "三星", model: model, fullName: `三星 ${model}`, source: "本地映射" };
+            }
+
+            if (/realme/i.test(ua)) {
+                let codeMatch = ua.match(/\b(RMX[0-9]{4})\b/i);
+                let code = codeMatch ? codeMatch[1].toUpperCase() : null;
+                let model = code && realmeModelMap[code] ? realmeModelMap[code] : null;
+                if (!model) { let nameMatch = ua.match(/realme\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i); if (nameMatch) model = nameMatch[1].trim(); }
+                if (!model) model = "realme 手机";
+                return { brand: "realme", model: model, fullName: `realme ${model}`, source: "本地映射" };
+            }
+
+            if (/Pixel/i.test(ua)) {
+                let pixelMatch = ua.match(/Pixel\s+([0-9]+[a-z\s]*(?:Pro|XL|Fold)?)/i);
+                let model = pixelMatch ? `Pixel ${pixelMatch[1].trim()}` : "Pixel";
+                return { brand: "Google", model: model, fullName: `Google ${model}`, source: "本地映射" };
+            }
+
+            if (/Meizu/i.test(ua)) {
+                let nameMatch = ua.match(/Meizu\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i);
+                let model = nameMatch ? nameMatch[1].trim() : "魅族手机";
+                return { brand: "魅族", model: model, fullName: `魅族 ${model}`, source: "本地映射" };
+            }
+
+            if (/Motorola|moto\s/i.test(ua)) {
+                let nameMatch = ua.match(/moto\s+([A-Za-z0-9 ]+?)(?:\s+Build|\))/i);
+                let model = nameMatch ? `moto ${nameMatch[1].trim()}` : "摩托罗拉手机";
+                return { brand: "摩托罗拉", model: model, fullName: `摩托罗拉 ${model}`, source: "本地映射" };
+            }
+
+            let buildMatch = ua.match(/\(Linux;\s*Android\s*[\d.]+;\s*([^;)\s][^;)]{1,40}?)\s*(?:Build|\))/i);
+            if (buildMatch) {
+                let rawModel = buildMatch[1].trim();
+                if (rawModel && rawModel.length > 2 && !/unknown|android/i.test(rawModel)) {
+                    return { brand: "安卓设备", model: rawModel, fullName: rawModel, source: "UA提取" };
                 }
             }
-            
-            return { brand, model, fullName, rawUA: ua };
+
+            try {
+                const parser = new UAParser();
+                const res = parser.getResult();
+                let vendor = res.device.vendor || "";
+                let model = res.device.model || "";
+                if (vendor && model && !model.includes("unknown")) {
+                    return { brand: vendor, model: model, fullName: `${vendor} ${model}`, source: "UAParser" };
+                }
+            } catch(e) {}
+
+            return null;
         }
-        
-        // 渲染成功界面
-        function renderSuccess(device) {
-            resultArea.innerHTML = `
-                <div class="brand-icon">📱</div>
-                <div class="model-name">${escapeHtml(device.fullName)}</div>
-                <div style="font-size: 0.75rem; color: #475569; margin-top: 0.5rem;">
-                    设备类型: ${/iPad|iPhone/i.test(device.rawUA) ? 'iOS设备' : '安卓设备'}
-                </div>
-                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.8rem;">
-                    👆 请截图此页，根据识别出来的品牌型号选择
-                </div>
-            `;
-            manualPanel.innerHTML = ''; // 无需手动选择
+
+        async function tryDeviceDetector() {
+            try {
+                await loadScript('https://cdn.jsdelivr.net/npm/device-detector-js@3.0.0/dist/device-detector.min.js', 4000);
+                if (typeof DeviceDetector !== 'undefined') {
+                    const detector = new DeviceDetector();
+                    const result = detector.parse(navigator.userAgent);
+                    if (result && result.device) {
+                        let brand = result.device.brand || '';
+                        let model = result.device.model || '';
+                        if (brand && model && model !== 'Unknown' && brand !== 'Unknown') {
+                            const brandMap = { "Apple": "Apple", "Huawei": "华为", "Xiaomi": "小米", "Samsung": "三星", "OPPO": "OPPO", "vivo": "vivo", "OnePlus": "一加", "Realme": "realme", "Google": "Google" };
+                            const displayBrand = brandMap[brand] || brand;
+                            return { brand: displayBrand, model: model, fullName: `${displayBrand} ${model}`, source: "DeviceDetector" };
+                        }
+                    }
+                }
+            } catch(err) { console.warn("device-detector-js 加载或解析失败", err); }
+            return null;
         }
-        
-        function renderFallback() {
-            // 识别失败时，提供常见品牌手动选择
+
+        async function tryBowser() {
+            try {
+                await loadScript('https://cdn.jsdelivr.net/npm/bowser@2.11.0/es5.js', 3000);
+                if (typeof bowser !== 'undefined') {
+                    const parser = bowser.getParser(navigator.userAgent);
+                    const platform = parser.getPlatformType();
+                    const ua = navigator.userAgent;
+                    let hintBrand = '';
+                    if (/iPhone/i.test(ua)) hintBrand = 'Apple';
+                    else if (/Mi\s|Redmi/i.test(ua)) hintBrand = '小米';
+                    else if (/SM-|Samsung/i.test(ua)) hintBrand = '三星';
+                    else if (/HUAWEI|HW-/i.test(ua)) hintBrand = '华为';
+                    else if (/OPPO/i.test(ua)) hintBrand = 'OPPO';
+                    else if (/vivo/i.test(ua)) hintBrand = 'vivo';
+                    if (hintBrand) {
+                        return { brand: hintBrand, model: (platform === 'mobile') ? '智能手机' : '设备', fullName: `${hintBrand} 智能手机`, source: "Bowser+UA" };
+                    }
+                    const os = parser.getOSName();
+                    if (os === 'iOS' || os === 'Android') {
+                        return { brand: "智能设备", model: os === 'iOS' ? 'iPhone/iPad' : '安卓手机', fullName: os === 'iOS' ? 'Apple 移动设备' : '安卓手机', source: "Bowser" };
+                    }
+                }
+            } catch(e) { console.warn("Bowser 加载失败", e); }
+            return null;
+        }
+
+        function tryLocalEnhanced() {
+            const localRes = getLocalEnhancedDevice();
+            if (localRes && localRes.fullName && localRes.fullName.length > 2 && !localRes.fullName.includes('undefined')) return localRes;
+            const ua = navigator.userAgent;
+            if (/iPhone|iPad|iPod/i.test(ua)) return { brand: "Apple", model: "iPhone/iPad", fullName: "Apple 移动设备", source: "兜底" };
+            if (/Android/i.test(ua)) return { brand: "安卓设备", model: "通用型号", fullName: "安卓手机 (请手动选择品牌)", source: "兜底" };
+            return null;
+        }
+
+        async function identifyWithMultipleEngines() {
+            updateLoadingStatus("正在调用设备指纹引擎...");
+            let result = await tryDeviceDetector();
+            if (result && result.fullName && !result.fullName.includes('未知') && result.brand && result.brand !== 'Unknown') {
+                renderSuccess(result, result.source); return true;
+            }
+            updateLoadingStatus("启用备用识别引擎...");
+            result = await tryBowser();
+            if (result && result.fullName && result.fullName.length > 3 && !result.fullName.includes('未知')) {
+                renderSuccess(result, result.source); return true;
+            }
+            updateLoadingStatus("深度本地解析中...");
+            result = tryLocalEnhanced();
+            if (result && result.fullName && result.fullName.length > 2) {
+                renderSuccess(result, result.source); return true;
+            }
+            return false;
+        }
+
+        function renderManualFallback() {
             resultArea.innerHTML = `
-                <div class="brand-icon">⚠️</div>
-                <div style="font-size: 1.1rem; font-weight: 500; margin: 0.5rem 0;">未能自动识别</div>
-                <div style="font-size: 0.8rem; color: #475569;">请点击下方品牌手动选择</div>
-            `;
+                <div class="brand-icon">🔍✨</div>
+                <div style="font-size: 1rem; font-weight: 500; margin: 0.5rem 0;">未能自动识别型号</div>
+                <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.5rem;">请点击下方品牌手动匹配</div>
+                <div class="engine-badge">💡 多引擎均未返回具体型号</div>`;
             manualPanel.innerHTML = `
                 <div class="manual-select">
-                    <div style="font-size: 0.75rem; color: #475569; margin-bottom: 0.3rem;">👇 常见品牌</div>
-                    <div class="brand-buttons" id="brandButtons">
+                    <div style="font-size: 0.7rem; color: #334155; text-align:center; margin-bottom: 0.5rem;">👇 选择您的手机品牌</div>
+                    <div class="brand-buttons">
                         <button class="brand-btn" data-brand="Apple iPhone">🍎 iPhone</button>
-                        <button class="brand-btn" data-brand="华为">📱 华为</button>
+                        <button class="brand-btn" data-brand="华为 (Huawei)">📱 华为</button>
+                        <button class="brand-btn" data-brand="荣耀 (Honor)">✨ 荣耀</button>
                         <button class="brand-btn" data-brand="小米/红米">📲 小米/红米</button>
                         <button class="brand-btn" data-brand="OPPO">📱 OPPO</button>
-                        <button class="brand-btn" data-brand="vivo">📱 vivo</button>
-                        <button class="brand-btn" data-brand="荣耀">✨ 荣耀</button>
-                        <button class="brand-btn" data-brand="三星">⭐ 三星</button>
-                        <button class="brand-btn" data-brand="一加">⚡ 一加</button>
+                        <button class="brand-btn" data-brand="vivo/iQOO">📱 vivo / iQOO</button>
+                        <button class="brand-btn" data-brand="三星 (Samsung)">⭐ 三星</button>
+                        <button class="brand-btn" data-brand="一加 (OnePlus)">⚡ 一加</button>
                         <button class="brand-btn" data-brand="realme">🎮 realme</button>
+                        <button class="brand-btn" data-brand="Google Pixel">📸 Pixel</button>
+                        <button class="brand-btn" data-brand="魅族/努比亚/摩托罗拉">📟 其他品牌</button>
                     </div>
-                </div>
-            `;
-            // 绑定按钮事件
+                </div>`;
             document.querySelectorAll('.brand-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', () => {
                     const brand = btn.getAttribute('data-brand');
                     resultArea.innerHTML = `
-                        <div class="brand-icon">✅</div>
+                        <div class="brand-icon">✅📌</div>
                         <div class="model-name">${escapeHtml(brand)}</div>
-                        <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.8rem;">
-                            👆 请截图记录
-                        </div>
-                    `;
-                    manualPanel.innerHTML = ''; // 清除选择区
+                        <div style="font-size: 0.7rem; color: #5b6e8c; margin-top: 0.7rem;">截图保存，避免选错型号</div>`;
+                    manualPanel.innerHTML = '';
                 });
             });
         }
-        
-        // 简单的防XSS
+
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-                return c;
-            });
+            return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m] || m));
         }
-        
-        // 主流程
-        try {
-            const device = getDeviceInfo();
-            // 如果识别结果太模糊 (例如 "未知品牌 未知型号" 或 "安卓手机 未知型号")
-            const isTooVague = device.fullName.includes('未知') || device.fullName === '安卓手机 (请见下方常见品牌)' || device.fullName === '未能自动识别';
-            if (!isTooVague && device.fullName && device.fullName.length > 2) {
-                renderSuccess(device);
-            } else {
-                renderFallback();
-            }
-        } catch (err) {
-            console.error(err);
-            renderFallback();
-        }
+
+        (async function init() {
+            try {
+                const success = await identifyWithMultipleEngines();
+                if (!success) renderManualFallback();
+            } catch (err) { console.error("识别过程出现异常", err); renderManualFallback(); }
+        })();
     })();
 </script>
 </body>
